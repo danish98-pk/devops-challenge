@@ -1,0 +1,13 @@
+namespace: monitoring
+service:
+  port: 80
+  type: ClusterIP
+
+ingress:
+  host: grafana.dkhalid.com
+  serviceName: grafana-dkhalid-com
+
+serviceMonitor:
+  port: http
+  path: /actuator/prometheus
+  interval: 15s

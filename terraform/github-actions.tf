@@ -27,7 +27,7 @@ resource "aws_iam_role" "github_actions_role" {
         Action = "sts:AssumeRoleWithWebIdentity",  # Action to assume the role
         Condition = {
           StringEquals = {
-            "token.actions.githubusercontent.com:sub" = "repo:danish98-pk/devops:ref:refs/heads/main"  # GitHub repository and branch
+            "token.actions.githubusercontent.com:sub" = "repo:danish98-pk/devops-challenge:ref:refs/heads/main"  # GitHub repository and branch
           }
         }
       }
