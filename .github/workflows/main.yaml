@@ -48,4 +48,4 @@ jobs:
           
       - name: Deploy Helm Chart
         run: |
-          helm upgrade --install app ./helm/app/       
+          helm upgrade --install app ./helm/app/ -n crewmeister 
