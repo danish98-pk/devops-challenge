@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:app}
+  datasource:
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:crewmeister123}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://staging-user-mgmt-db.c012uqsoi91t.us-east-1.rds.amazonaws.com:3306/challenge?createDatabaseIfNotExist=true}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  flyway:
+    url: ${SPRING_DATASOURCE_WRITER_URL:jdbc:mysql://staging-user-mgmt-db.c012uqsoi91t.us-east-1.rds.amazonaws.com:3306/challenge?createDatabaseIfNotExist=true}
+    user: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:crewmeister123}
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${ACTUATOR_ENDPOINTS:health,info,prometheus}
+  metrics:
+    export:
+      prometheus:
+        enabled: true
