@@ -63,5 +63,7 @@ resource "aws_iam_policy" "custom_ecr_push_policy" {
 # Attach the custom ECR push policy to the IAM role
 resource "aws_iam_role_policy_attachment" "github_actions_custom_ecr_policy" {
   role       = aws_iam_role.github_actions_role.name
-  policy_arn = aws_iam_policy.custom_ecr_push_policy.arn
+
+  #for testing
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
