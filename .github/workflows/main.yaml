@@ -21,7 +21,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ secrets.REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -40,7 +40,7 @@ jobs:
         run: aws sts get-caller-identity
 
       - name: Update kubeconfig for EKS
-        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.REGION }}
 
       - name: Deploy Helm Chart
         run: |
