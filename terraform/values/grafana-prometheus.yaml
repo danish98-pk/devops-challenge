@@ -1,0 +1,48 @@
+grafana:
+  persistence:
+    enabled: true
+    storageClassName: ebs-gp3-encrypted
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+  adminPassword: devops-challenge
+
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: ebs-gp3-encrypted
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
+
+
+# grafana:
+#   persistence:
+#     enabled: true
+#     storageClassName: ebs-gp3-encrypted
+#     accessModes:
+#       - ReadWriteOnce
+#     size: 5Gi
+#     finalizers:
+#       - kubernetes.io/pvc-protection
+#     annotations: {}
+#     existingClaim: ""  # Leave empty to let Helm create the named PVC
+#   volumeMounts:
+#     - name: storage
+#       mountPath: /var/lib/grafana
+#   extraVolumeMounts: []
+
+# prometheus:
+#   prometheusSpec:
+#     storageSpec:
+#       volumeClaimTemplate:
+#         spec:
+#           storageClassName: ebs-gp3-encrypted
+#           accessModes: ["ReadWriteOnce"]
+#           resources:
+#             requests:
+#               storage: 20Gi
+
