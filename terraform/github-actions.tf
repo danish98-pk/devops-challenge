@@ -67,3 +67,10 @@ resource "aws_iam_role_policy_attachment" "github_actions_custom_ecr_policy" {
   #for testing
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+
+
+resource "aws_eks_access_entry" "github-actions" {
+  cluster_name      = aws_eks_cluster.eks.name
+  principal_arn     = aws_iam_role.github_actions_role.arn
+  kubernetes_groups = ["my-admin"]
+}
