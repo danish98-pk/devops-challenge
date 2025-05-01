@@ -214,6 +214,26 @@ module "devops-challenge-autoscaler" {
 }
 
 
+## AWS LOAD BALANCER CONTROLLER HELM CHART
+module "devops-challenge-loadbalancercontroller" {
+
+  source = "./loadbalancercontroller"
+
+  env = var.env
+
+  eks_name = var.eks_name
+
+  vpc_id = module.devops-challenge-network.vpc_id
+
+  policy_file = "${path.module}/AWSLoadBalancerController.json"
+
+    providers = {
+    helm = helm
+  }
+}
+
+
+
 
 
 
