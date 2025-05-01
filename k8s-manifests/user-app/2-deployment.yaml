@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crewmeister-deployment
+  namespace: crewmeister
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: crewmeister
+  template:
+    metadata:
+      labels:
+        app: crewmeister
+    spec:
+      containers:
+        - name: crewmeister-app
+          image: 680343405290.dkr.ecr.us-east-1.amazonaws.com/crewmeister-challenge:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_APPLICATION_NAME
+              value: crewmeister-app
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: SPRING_DATASOURCE_PASSWORD
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://staging-user-mgmt-db.c012uqsoi91t.us-east-1.rds.amazonaws.com:3306/challenge?createDatabaseIfNotExist=true
+            - name: SPRING_DATASOURCE_WRITER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: SPRING_DATASOURCE_WRITER_URL
+            - name: ACTUATOR_ENDPOINTS
+              value: health,info,prometheus
+          resources:
+            requests:
+              memory: "512Mi"  # Minimum memory the container will get
+              cpu: "250m"      # Minimum CPU the container will get
+            limits:
+              memory: "1Gi"    # Maximum memory the container can use
+              cpu: "500m"      # Maximum CPU the container can use
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 59 # Delay before the probe is started
+            periodSeconds: 20     # How often to perform the probe
+            failureThreshold: 3     # Number of failures before marking the pod as unhealthy
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 59 # Delay before the probe is started
+            periodSeconds: 20     # How often to perform the probe
+            failureThreshold: 3      # Number of failures before restarting the pod
+
+
+
+# Example Scenario:
+# If you have 2 replicas and update the deployment:
+
+# At the beginning, Kubernetes will start with 2 pods running.
+
+# During the update, Kubernetes will first create 1 new pod, bringing the total to 3 pods.
+
+# After the new pod is ready, 1 old pod will be terminated (down to 2 pods again), then another new pod will be created, and so on.
+
+# The process will continue until the new version is running in all pods and the old ones are replaced.
+
+# To summarize:
+# This rolling update configuration helps ensure that your application minimizes downtime while gradually replacing the old pods with the new ones.
+
+# You can have up to 3 extra pods running at the same time during the update and only 1 pod unavailable at a time.
