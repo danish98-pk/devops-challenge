@@ -40,6 +40,6 @@ resource "kubernetes_namespace" "prometheus" {
 resource "kubernetes_namespace" "ingress" {
   metadata {
     name = var.namespace_ingress
-}
+  }
 }
 

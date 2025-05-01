@@ -18,12 +18,12 @@ variable "namespace_app" {
   description = "namespace for the application"
 }
 
-variable "namespace_monitoring"{
+variable "namespace_monitoring" {
   type        = string
   description = "namespace for the application"
 }
 
-variable "namespace_ingress"{
+variable "namespace_ingress" {
   type        = string
   description = "namespace for the ingress"
 }

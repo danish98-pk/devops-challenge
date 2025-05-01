@@ -200,3 +200,9 @@ variable "parameter_group_name" {
   description = "defauly mysql parameter group name"
   type        = string
 }
+
+
+variable "region" {
+  description = "region -- us-east-1"
+  type        = string
+}

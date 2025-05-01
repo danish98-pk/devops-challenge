@@ -139,20 +139,7 @@ data "aws_eks_cluster_auth" "eks" {
 }
 
 
-
-# module "k8s_setup" {
-#   source = "./k8s-setup"
-
-#   k8s_host  = data.aws_eks_cluster.eks.endpoint
-#   k8s_ca    = data.aws_eks_cluster.eks.certificate_authority[0].data
-#   k8s_token = data.aws_eks_cluster_auth.eks.token
-
-#   namespace_app        = "crewmeister"
-#   namespace_monitoring = "monitoring"
-#   namespace_ingress    = "ingress"
-
-# }
-
+#connecting kubernetes and deploy namespaces on the fly
 module "k8s_setup" {
   source = "./k8s-setup"
 
@@ -164,4 +151,71 @@ module "k8s_setup" {
   namespace_monitoring = "monitoring"
   namespace_ingress    = "ingress"
 }
+
+
+
+
+### AWS  IAM
+module "devops-challenge-iam" {
+
+  source = "./iam"
+
+  env = var.env
+
+  eks_name = var.eks_name
+}
+
+
+provider "helm" {
+  kubernetes {
+    host                   = module.devops-challenge-eks-cluster.eks_endpoint
+    cluster_ca_certificate = base64decode(module.devops-challenge-eks-cluster.cluster_certificate_authority)
+    token                  = data.aws_eks_cluster_auth.eks.token
+  }
+}
+
+
+
+module "metrics_server" {
+  source      = "./helm-metrics-server"
+  values_file = "${path.module}/values/metrics-server.yaml"
+
+  providers = {
+    helm = helm
+  }
+}
+
+
+### AWS  POD Identity
+module "devops-challenge-pod-identity-addon" {
+
+  source = "./pod-identity"
+
+  env = var.env
+
+  eks_name = var.eks_name
+}
+
+
+## AutoScaler HelmChart
+module "devops-challenge-autoscaler" {
+
+  source = "./autoscaler-cluster"
+
+  env = var.env
+
+  eks_name = var.eks_name
+  
+  region = var.region
+
+    providers = {
+    helm = helm
+  }
+}
+
+
+
+
+
+
 
