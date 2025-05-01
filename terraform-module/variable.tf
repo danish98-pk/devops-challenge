@@ -97,6 +97,28 @@ variable "eks_version" {
 }
 
 
+variable "desired_size" {
+  description = "setup the eks version"
+  type        = number
+}
+
+variable "max_size" {
+  description = "setup max size"
+  type        = number
+}
+
+
+variable "min_size" {
+  description = "setup min size"
+  type        = number
+}
+
+#set
+variable "max_unavailable" {
+  description = "max_unavailable"
+  type        = number
+}
+
 
 ##########################
 ##########################

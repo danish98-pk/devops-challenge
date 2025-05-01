@@ -53,7 +53,7 @@ module "devops-challenge-ecr" {
 # AWS RDS --- User management data will be stored here
 module "devops-challenge-rds" {
 
-  source = "./rds"
+  source = "./storage"
 
   env = var.env
 
@@ -61,8 +61,8 @@ module "devops-challenge-rds" {
 
   vpc_cidr_block = var.vpc_cidr_block
 
-  private_subnet_ids = [ module.devops-challenge-network.private_zone_1 
-  , module.devops-challenge-network.private_zone_2 ]
+  private_subnet_ids = [module.devops-challenge-network.private_zone_1
+  , module.devops-challenge-network.private_zone_2]
 
   db_from_port = var.db_from_port
 
@@ -97,13 +97,71 @@ module "devops-challenge-eks-cluster" {
   source = "./eks"
 
   env = var.env
-  
+
   eks_name = var.eks_name
 
   eks_version = var.eks_version
-  
-  private_subnet_ids = [ module.devops-challenge-network.private_zone_1 
-  , module.devops-challenge-network.private_zone_2 ]
 
+  private_subnet_ids = [module.devops-challenge-network.private_zone_1
+  , module.devops-challenge-network.private_zone_2]
+
+}
+
+
+### AWS EKS Node Group
+module "devops-challenge-eks-node" {
+
+  source = "./node-group"
+
+  env = var.env
+
+  eks_name = var.eks_name
+
+  eks_version = var.eks_version
+
+  private_subnet_ids = [module.devops-challenge-network.private_zone_1
+  , module.devops-challenge-network.private_zone_2]
+
+  desired_size = var.desired_size
+
+  max_size = var.max_size
+
+  min_size = var.min_size
+  
+  max_unavailable = var.max_unavailable
+
+}
+
+
+
+data "aws_eks_cluster_auth" "eks" {
+  name = module.devops-challenge-eks-cluster.eks_name
+}
+
+
+
+# module "k8s_setup" {
+#   source = "./k8s-setup"
+
+#   k8s_host  = data.aws_eks_cluster.eks.endpoint
+#   k8s_ca    = data.aws_eks_cluster.eks.certificate_authority[0].data
+#   k8s_token = data.aws_eks_cluster_auth.eks.token
+
+#   namespace_app        = "crewmeister"
+#   namespace_monitoring = "monitoring"
+#   namespace_ingress    = "ingress"
+
+# }
+
+module "k8s_setup" {
+  source = "./k8s-setup"
+
+  k8s_host  = module.devops-challenge-eks-cluster.eks_endpoint
+  k8s_ca    = module.devops-challenge-eks-cluster.cluster_certificate_authority
+  k8s_token = data.aws_eks_cluster_auth.eks.token
+
+  namespace_app        = "crewmeister"
+  namespace_monitoring = "monitoring"
+  namespace_ingress    = "ingress"
 }
 
