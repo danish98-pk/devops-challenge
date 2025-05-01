@@ -36,16 +36,16 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           
-      # - name: Verify AWS Identity
-      #   run: aws sts get-caller-identity
+      - name: Verify AWS Identity
+        run: aws sts get-caller-identity
 
-      # - name: Update kubeconfig for EKS
-      #   run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.REGION }}
+      - name: Update kubeconfig for EKS
+        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.REGION }}
 
-      # - name: Deploy Helm Chart
-      #   run: |
-      #     kubectl get pods -n kube-system
+      - name: Deploy Helm Chart
+        run: |
+          kubectl get pods -n kube-system
           
-      # - name: Deploy Helm Chart
-      #   run: |
-      #     helm upgrade --install app ./helm/app/ -n crewmeister 
+      - name: Deploy Helm Chart
+        run: |
+          helm upgrade --install app ./helm/app/ -n crewmeister 
