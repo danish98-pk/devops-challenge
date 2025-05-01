@@ -8,7 +8,7 @@ resource "aws_iam_openid_connect_provider" "github" {
   ]
 
   thumbprint_list = [
-    "6938fd4d98bab03faadb97b34396831e3780aea1"  # GitHub's root CA thumbprint
+    "6938fd4d98bab03faadb97b34396831e3780aea1"
   ]
 }
 
@@ -17,17 +17,17 @@ resource "aws_iam_role" "github_actions_role" {
   name = "github-actions-deploy"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17",  # Policy version
+    Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow",  # Allow this action
+        Effect = "Allow",
         Principal = {
-          Federated = aws_iam_openid_connect_provider.github.arn  # OIDC provider for GitHub Actions
+          Federated = aws_iam_openid_connect_provider.github.arn
         },
-        Action = "sts:AssumeRoleWithWebIdentity",  # Action to assume the role
+        Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
-            "token.actions.githubusercontent.com:sub" = "repo:danish98-pk/devops-challenge:ref:refs/heads/main"  # GitHub repository and branch
+            "token.actions.githubusercontent.com:sub" = "repo:${local.github.github_repo}:ref:refs/heads/${local.github.github_branch}"
           }
         }
       }

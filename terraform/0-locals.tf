@@ -14,4 +14,9 @@ locals {
     port     = 3306
   }
 
+  github = {
+  github_repo   = "danish98-pk/devops-challenge"
+  github_branch = "main"
+}
+
 }

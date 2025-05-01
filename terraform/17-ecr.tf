@@ -29,13 +29,3 @@ resource "aws_ecr_lifecycle_policy" "untagged" {
     ]
   })
 }
-
-
-# to authenticate
-# sudo docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 680343405290.dkr.ecr.us-east-1.amazonaws.com
-
-#tag
-# docker tag prod-app:latest 680343405290.dkr.ecr.us-east-1.amazonaws.com/crewmeister-challenge:latest
-
-#push
-# docker push 680343405290.dkr.ecr.us-east-1.amazonaws.com/crewmeister-challenge:latest
