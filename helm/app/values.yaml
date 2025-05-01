@@ -1,9 +1,91 @@
-namespace: crewmeister
+# namespace: crewmeister
+# replicaCount: 2
+# image:
+#   repository: 680343405290.dkr.ecr.us-east-1.amazonaws.com/crewmeister-challenge
+#   tag: latest
+
+# resources:
+#   requests:
+#     memory: "512Mi"
+#     cpu: "250m"
+#   limits:
+#     memory: "1Gi"
+#     cpu: "500m"
+
+# rollingUpdate:
+#   maxSurge: 3
+#   maxUnavailable: 1
+
+# dbCredentials:
+#   username: root
+#   password: crewmeister123
+#   writerUrl: jdbc:mysql://staging-user-mgmt-db.c012uqsoi91t.us-east-1.rds.amazonaws.com:3306/challenge?createDatabaseIfNotExist=true
+# # Probes
+# readinessProbe:
+#   initialDelaySeconds: 59
+#   periodSeconds: 20
+#   failureThreshold: 3
+# livenessProbe:
+#   initialDelaySeconds: 59
+#   periodSeconds: 20
+#   failureThreshold: 3
+
+# autoscaling:
+#   minReplicas: 2
+#   maxReplicas: 10
+#   cpuUtilizationTarget: 70
+
+# ingress:
+#    host: crewmeister.dkhalid.com
+#    secretName: crewmeister-dkhalid-com
+
+# service:
+#   port: 80
+#   type: ClusterIP
+
+
+###
+###
+
+
+# Default values for crewmeister Helm chart.
+
+# Deployment Configuration
 replicaCount: 2
+
+# Image configuration
 image:
   repository: 680343405290.dkr.ecr.us-east-1.amazonaws.com/crewmeister-challenge
   tag: latest
 
+# Namespace Configuration
+namespace: crewmeister
+
+# Service Configuration
+service:
+  port: 80
+  targetPort: 8080
+  type: ClusterIP 
+
+# Secret Configuration
+dbCredentials:
+  username: root
+  password: crewmeister123
+  writerUrl: jdbc:mysql://staging-user-mgmt-db.c012uqsoi91t.us-east-1.rds.amazonaws.com:3306/challenge?createDatabaseIfNotExist=true
+
+# Ingress Configuration
+ingress:
+  host: crewmeister.dkhalid.com
+  tlsSecretName: crewmeister-dkhalid-com
+
+# Horizontal Pod Autoscaler Configuration
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# Resource Requests and Limits
 resources:
   requests:
     memory: "512Mi"
@@ -12,33 +94,37 @@ resources:
     memory: "1Gi"
     cpu: "500m"
 
-rollingUpdate:
-  maxSurge: 3
-  maxUnavailable: 1
-
-dbCredentials:
-  username: root
-  password: crewmeister123
-  writerUrl: jdbc:mysql://staging-user-mgmt-db.c012uqsoi91t.us-east-1.rds.amazonaws.com:3306/challenge?createDatabaseIfNotExist=true
-# Probes
-readinessProbe:
-  initialDelaySeconds: 59
-  periodSeconds: 20
-  failureThreshold: 3
-livenessProbe:
-  initialDelaySeconds: 59
-  periodSeconds: 20
-  failureThreshold: 3
+# Probes Configuration
+probes:
+  readiness:
+    path: /actuator/health
+    initialDelaySeconds: 59
+    periodSeconds: 20
+    failureThreshold: 3
+  liveness:
+    path: /actuator/health
+    initialDelaySeconds: 59
+    periodSeconds: 20
+    failureThreshold: 3
 
 autoscaling:
   minReplicas: 2
   maxReplicas: 10
-  cpuUtilizationTarget: 70
+  cpuUtilization: 70
 
-ingress:
-   host: crewmeister.dkhalid.com
-   secretName: crewmeister-dkhalid-com
+rollingUpdate:
+  maxSurge: 3
+  maxUnavailable: 1
 
-service:
-  port: 80
-  type: ClusterIP
+deployment:
+  replicas: 2 
+  image:
+    repository: 680343405290.dkr.ecr.us-east-1.amazonaws.com/crewmeister-challenge
+    tag: latest
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"

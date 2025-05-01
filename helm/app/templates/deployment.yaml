@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-deployment
+  name: crewmeister-deployment
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.deployment.replicas }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -19,10 +19,10 @@ spec:
         app: crewmeister
     spec:
       containers:
-        - name: {{ .Release.Name }}-app
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        - name: crewmeister-app
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}"
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.service.targetPort }}
           env:
             - name: SPRING_APPLICATION_NAME
               value: crewmeister-app
@@ -36,16 +36,13 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: SPRING_DATASOURCE_PASSWORD
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: db-credentials
-                  key: SPRING_DATASOURCE_WRITER_URL
             - name: SPRING_DATASOURCE_WRITER_URL
               valueFrom:
                 secretKeyRef:
                   name: db-credentials
                   key: SPRING_DATASOURCE_WRITER_URL
+            - name: ACTUATOR_ENDPOINTS
+              value: health,info,prometheus
           resources:
             requests:
               memory: "{{ .Values.resources.requests.memory }}"
@@ -55,15 +52,15 @@ spec:
               cpu: "{{ .Values.resources.limits.cpu }}"
           readinessProbe:
             httpGet:
-              path: /actuator/health
-              port: 8080
-            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+              path: {{ .Values.probes.readiness.path }}
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
           livenessProbe:
             httpGet:
-              path: /actuator/health
-              port: 8080
-            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+              path: {{ .Values.probes.liveness.path }}
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
