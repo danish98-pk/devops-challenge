@@ -5,7 +5,7 @@ metadata:
   name: http-01-production
 spec:
   acme:
-    email: bdk42213@gmail.com
+    email: danish.dkkhalid@gmail.com
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: http-01-production-cluster-issuer
