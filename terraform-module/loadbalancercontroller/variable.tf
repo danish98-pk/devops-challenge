@@ -9,15 +9,16 @@ variable "eks_name" {
   type        = string
 }
 
-#set the  env
-variable "env" {
-  description = "Environment name (e.g. dev, prod)"
-  type        = string
-}
 
 
 #set vpc id
 variable "vpc_id" {
   description = "vpc id"
+  type        = string
+}
+
+#set vpc id
+variable "env" {
+  description = "environment"
   type        = string
 }

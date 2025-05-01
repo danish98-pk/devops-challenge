@@ -1,8 +1,3 @@
-variable "env" {
-  description = "Environment name (e.g. dev, prod)"
-  type        = string
-}
-
 variable "vpc_cidr_block" {
   description = "cidr  block for the vpc"
   type        = string
@@ -52,5 +47,10 @@ variable "private_routetable_cidr_block" {
 
 variable "eks_name" {
   description = "setup eks name"
+  type        = string
+}
+
+variable "env" {
+  description = "setup env name"
   type        = string
 }

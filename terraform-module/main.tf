@@ -30,7 +30,6 @@ module "devops-challenge-network" {
   #set the az 2
   availability_zone_2 = var.availability_zone_2
 
-  #set the env for tag
   env = var.env
 
   #set the eks name
@@ -130,6 +129,8 @@ module "devops-challenge-eks-node" {
   
   max_unavailable = var.max_unavailable
 
+  depends_on = [ module.devops-challenge-eks-cluster ]
+
 }
 
 
@@ -176,7 +177,7 @@ provider "helm" {
 
 
 
-module "metrics_server" {
+module "devops-challenge-metrics_server" {
   source      = "./helm-metrics-server"
   values_file = "${path.module}/values/metrics-server.yaml"
 
@@ -194,6 +195,7 @@ module "devops-challenge-pod-identity-addon" {
   env = var.env
 
   eks_name = var.eks_name
+
 }
 
 
@@ -211,6 +213,8 @@ module "devops-challenge-autoscaler" {
     providers = {
     helm = helm
   }
+
+  depends_on = [module.devops-challenge-metrics_server]
 }
 
 
@@ -230,7 +234,66 @@ module "devops-challenge-loadbalancercontroller" {
     providers = {
     helm = helm
   }
+
+  depends_on = [ module.devops-challenge-autoscaler ]
 }
+
+
+## NGINX INGRESS  HELM CHART
+module "devops-challenge-nginx" {
+
+  source = "./nginx_ingress"
+
+  nginx_values_file = "${path.module}/values/nginx-ingress.yaml"
+
+  providers = {
+    helm = helm
+  }
+
+  depends_on = [module.devops-challenge-loadbalancercontroller]
+}
+
+
+## Certificate Manager  HELM CHART
+module "devops-challenge-cert_manager" {
+
+  source = "./certificate_manager"
+
+  providers = {
+    helm = helm
+  }
+
+  depends_on = [module.devops-challenge-nginx]
+}
+
+
+## Certificate Manager  HELM CHART
+module "devops-challenge-ebs_csi" {
+
+  source = "./ebs-csi"
+
+  env = var.env
+
+  eks_name = var.eks_name
+
+  depends_on = [module.devops-challenge-eks-node]
+}
+
+
+## GITHUB OIDC
+module "github_oidc" {
+  source = "./github_actions"
+
+  repo_name         = "danish98-pk/devops-challenge"
+  repo_branch       = "main"
+  iam_role_name     = "github-actions-deploy"
+  eks_cluster_name  = "devops-challenge"
+  kubernetes_groups = ["my-admin"]
+  eks_name = var.eks_name
+  env = var.env
+}
+
+
 
 
 
