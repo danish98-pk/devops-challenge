@@ -91,6 +91,13 @@ variable "eks_name" {
 
 
 
+variable "eks_version" {
+  description = "setup the eks version"
+  type        = string
+}
+
+
+
 ##########################
 ##########################
 

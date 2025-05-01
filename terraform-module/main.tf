@@ -89,3 +89,21 @@ module "devops-challenge-rds" {
   parameter_group_name = var.parameter_group_name
 
 }
+
+
+### AWS EKS Cluster Module
+module "devops-challenge-eks-cluster" {
+
+  source = "./eks"
+
+  env = var.env
+  
+  eks_name = var.eks_name
+
+  eks_version = var.eks_version
+  
+  private_subnet_ids = [ module.devops-challenge-network.private_zone_1 
+  , module.devops-challenge-network.private_zone_2 ]
+
+}
+
